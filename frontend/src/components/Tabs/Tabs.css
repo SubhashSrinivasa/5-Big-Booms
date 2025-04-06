@@ -1,46 +1,266 @@
 .tabs-container {
     display: flex;
-    flex-direction: column; /* Stack tabs vertically */
-    width: 100%; /* Full width of the container */
-    margin: 0;
-    padding: 0;
+    flex-direction: column; /* Arrange tabs vertically */
+    width: 65%; /* Keep width as is */
+    margin: 0 auto; /* Center horizontally */
+    height: calc(100vh - 100px); /* Reduce height to fit within viewport */
+    background-color: #0d1116; /* Dark background */
+    color: #e0e0e0; /* Light gray text for dark mode */
+    position: relative; /* Enable positioning for child elements */
+    overflow-y: hidden; /* Prevent scrolling */
+    border: none; /* Transparent border */
+    padding-top: 10px; /* Added tiny padding between the top news tab and the nav bar */
+}
+
+/* If your navbar has a matching class, e.g., .navbar */
+.navbar {
+    border: none; /* Make navbar border transparent */
+    height: 60px; /* Increased navbar height */
+    position: relative; /* Ensure pseudo-element is positioned correctly */
+}
+
+.navbar::after {
+    content: "news feed";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #e0e0e0;
+    font-size: 1.2rem;
+    border: 1px solid #e0e0e0; /* Add border with same color as tab text */
+    padding: 10px 15px; /* Increased padding for a bigger rectangular box */
+}
+
+.tab-wrapper {
+    display: none; /* Hide all tabs by default */
+}
+
+.tab-wrapper.visible {
+    display: flex; /* Show visible tabs */
+    flex-grow: 1; /* Allow tabs to grow equally */
+    flex-direction: column;
+}
+
+.tab-wrapper.hidden {
+    display: none; /* Ensure hidden tabs are not displayed */
+}
+
+.tab-expanded {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Take up the full height of the container */
+    gap: 0px; /* Reduced gap between active tab header and tab content */
+}
+
+.tab-expanded .tab-content {
+    margin-top: 0; /* Remove extra margin above the content */
+}
+
+.tab-expanded .tab {
+    width: 100%; /* Full width for the active tab header */
+    text-align: left; /* Align text to the left */
+    padding: 15px;
+    border: none; /* Remove borders */
+    border-radius: 20px; /* Updated rounded corners */
+    cursor: pointer;
+    background-color: #0d1116; /* Changed from #6a6966 */
+    color: #ffffff; /* White text for active tab */
+    font-size: 1rem; /* Reduced font size for smaller titles */
+    font-weight: bold;
+    box-shadow: none; /* Removed shadow */
+    position: relative; /* Enable positioning */
+    z-index: 1; /* Ensure it appears above the content */
 }
 
 .tab {
-    width: 100%; /* Each tab spans the full width */
-    text-align: center;
-    padding: 15px; /* Adjust padding for better spacing */
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+    width: 100%; /* Full width within the container */
+    text-align: left; /* Align text to the left for the title */
+    padding: 12px; /* Slightly reduced padding to make tabs smaller */
+    border: none; /* Remove borders */
+    border-radius: 15px; /* Slightly rounded corners */
     cursor: pointer;
-    background-color: #f9f9f9; /* Optional: Add background color */
+    background-color: #0d1116; /* Dark background for tabs */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    font-size: 0.95rem; /* Slightly smaller font size for titles */
+    font-weight: bold;
+    color: #e0e0e0; /* Light gray text for titles */
+    box-shadow: none; /* No shadow effect */
+    position: relative;
+    box-sizing: border-box;
+    flex-shrink: 1; /* Allow tabs to shrink slightly if necessary */
+    display: flex;
+    align-items: center; /* Center content vertically within each tab */
+    justify-content: space-between; /* Space out title and category */
+}
+
+.category {
+    font-size: 0.8rem; /* Smaller font size than title */
+    font-weight: normal; /* Ensure category text is not bolded */
+    color: #e0e0e0; /* Match category text color with title color */
+    margin-left: auto;
+    text-transform: lowercase; /* Convert category text to lowercase */
 }
 
 .tab:hover {
-    background-color: #e0e0e0; /* Optional: Add hover effect */
+    /* Glass morphism effect on hover similar to context/implications */
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(4px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(150%) !important;
+    box-shadow: none; /* Removed shadow */
 }
 
 .tab.active {
-    background-color: #d0d0d0; /* Highlight active tab */
+    order: -1; /* Move active tab header to the top */
+    background: #0d1116 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none; /* Remove visible border */
+    box-shadow: none; /* Removed shadow */
+    color: #f0f6fc; /* Uniform text color */
     font-weight: bold;
+    transform: none;
+}
+
+.tab.active:hover {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(4px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(150%) !important;
+}
+
+.tab.active .summary {
+    display: none; /* Remove the word "summary" from active news tabs */
 }
 
 .tab-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease;
-    padding: 0 20px; /* Padding will collapse when hidden */
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex-grow: 1; /* Allow the content to take up the remaining space */
+    overflow-y: auto; /* Enable scrolling if content overflows */
+    padding: 20px; /* Consistent padding */
+    background-color: #0d1116; /* Changed from #454340 */
+    border: none; /* Remove borders */
+    border-radius: 0; /* No rounded corners */
+    box-shadow: none; /* Removed shadow */
+    font-size: 1rem; /* Standard font size for content */
+    line-height: 1.8; /* Improve readability */
+    color: #e0e0e0; /* Light gray text */
+    box-sizing: border-box; /* Ensure consistent sizing */
+    text-align: left; /* Left-align text in active news tabs */
 }
 
 .tab-content.expanded {
-    max-height: 200px; /* Adjust based on expected content height */
-    padding: 20px;
+    max-height: none; /* Allow content to expand fully */
+    padding: 20px; /* Ensure padding is applied */
 }
 
 .tab-content.collapsed {
-    max-height: 0;
-    padding: 0 20px;
+    max-height: 0; /* Collapse content */
+    padding: 0 0px; /* Keep horizontal padding */
+}
+
+.tab-content h2 {
+    font-size: 1.5rem; /* Larger font size for titles */
+    margin-bottom: 15px;
+    color: #a6c1ff; /* Soft blue for titles */
+    transition: color 0.3s ease;
+}
+
+.tab-content h2:hover {
+    color: #8aa8ff; /* Slightly darker blue on hover */
+}
+
+.tab-content p {
+    margin-bottom: 10px; /* Add spacing between paragraphs */
+    font-size: 0.85rem; /* Decrease font size for "Articles" title */
+}
+
+.tab-content strong {
+    color: #e0e0e0; /* Light gray for emphasis */
+}
+
+.tab-content ul {
+    list-style: none; /* Remove default list styles */
+    margin-top: 10px;
+    padding-left: 20px; /* Indent list items */
+}
+
+.tab-content ul li {
+    margin-bottom: 5px;
+}
+
+.tab-content ul li a {
+    color: #a6c1ff; /* Soft blue for links */
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    font-size: 0.75rem; /* Slightly smaller */
+}
+
+.tab-content ul li a:hover {
+    color: #8aa8ff; /* Slightly darker blue on hover */
+    text-shadow: none; /* Removed text shadow */
+}
+
+.tab-content-inner {
+    text-align: left; /* Center the text inside the popup */
+    width: 100%; /* Ensure content spans the full width */
+}
+
+.tab-content-inner .context,
+.tab-content-inner .implications {
+    font-size: 0.85rem; /* Slightly smaller */
+    position: relative;
+    background: rgba(255, 255, 255, 0.05);  /* semi-transparent base, was 0.10 */
+    border-radius: 20px; /* Updated rounded corners for panels */
+    box-shadow: none; /* Removed shadow */
+    overflow: hidden;
+    /* Increase padding to make the glass panels larger */
+    padding: 20px;  /* Increased padding */
+}
+
+.tab-content-inner .context::before,
+.tab-content-inner .implications::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* Modified glassy overlay for improved text visibility */
+    backdrop-filter: blur(4px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(4px) saturate(150%) !important;
+    background: rgba(255, 255, 255, 0.01) !important;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.tab-content-inner .context.clear,
+.tab-content-inner .implications.clear {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+}
+
+.tab-content-inner .context.clear::before,
+.tab-content-inner .implications.clear::before {
+    content: none !important;
+}
+
+.tab-content-inner .summary {
+    font-size: 0.95rem; /* Match summary font size to tab title font size */
+    font-weight: bold;
+}
+
+/* Set the background color for the page margins to #0d1116 */
+html, body {
+    background-color: #0d1116;
+    margin: 0;
+    padding: 0;
+    font-family: "San Francisco", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.fax {
+    font-size: 1.2rem; /* Make "fax" slightly larger */
+    line-height: 60px; /* Align vertically with navbar */
 }

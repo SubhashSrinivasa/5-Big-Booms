@@ -1,12 +1,13 @@
 require('dotenv').config();
-
+const path = require('path');
 const pLimit = require('p-limit');
 const { writeFileSync } = require('fs');
 const retry = require('async-retry');
 const axios = require('axios');
 
-const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY;
-const NEWS_API_KEY = process.env.NEWS_API_KEY;
+const PERPLEXITY_API_KEY = "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";
+const NEWS_API_KEY = "8773f10be46d4d98aef6d0ef37523e00";
+const filePath = path.join(process.cwd(), 'frontend', 'public', 'top_7_grouped_news.json');
 
 async function getTopNewsIssues() {
   const sources = [
@@ -34,7 +35,7 @@ async function getTopNewsIssues() {
       return;
     }
 
-    // Step 2: Scrape full article content using Perplexity (concurrently, with retry)
+    // Step 2: Scrape article content
     const limit = pLimit(5);
     const processingQueue = newsData.articles.map(article => limit(async () => {
       return await retry(async () => {
@@ -64,15 +65,7 @@ async function getTopNewsIssues() {
 
           const fullContent = scrapeResponse.data?.choices?.[0]?.message?.content?.trim();
           if (!fullContent) throw new Error('Missing article content');
-
-          return {
-            title: article.title,
-            url: article.url,
-            source: article.source?.name || 'Unknown',
-            published_at: article.publishedAt,
-            description: article.description,
-            content: fullContent
-          };
+          return { ...article, content: fullContent };
         } catch (err) {
           console.error(`Error scraping article: ${err.message}`);
           throw err;
@@ -82,7 +75,7 @@ async function getTopNewsIssues() {
 
     const fullArticles = await Promise.all(processingQueue);
 
-    // Step 3: Send all full articles to Perplexity for grouping + summarization
+    // Step 3: Process and summarize
     const summarizationResponse = await retry(async () => {
       const response = await axios.post(
         'https://api.perplexity.ai/chat/completions',
@@ -92,48 +85,50 @@ async function getTopNewsIssues() {
             {
               role: 'system',
               content: `
-
-  You are a high-accuracy information extractor and analyst.
+You are a high-accuracy information extractor and analyst.
 
 Given a list of articles (each with a title, short description, and full content), do the following:
 
 1. Group articles ONLY if they describe the same specific news event. Do NOT group by general topic.
 2. Identify the 7 most important unique world news events from these groups.
 3. For each event:
-   a. Write 1-2 sentences summarizing the main issue/event (focus on factual what/when/where)
-   b. Offer 3-4 sentences of non-redundant context from the articles, including historical background, key players, and related developments. Use relevant background information from the articles and seek out new articles for context if needed.
-   c. Provide 3-4 sentences of non-redundant implications from the articles (potential consequences, expert predictions, stakeholder impacts)
+   a. Write 1-2 sentences summarizing the main issue/event.
+   b. Provide non-redundant context and implications.
+   c. Assign one category from this list:
+      - Governance & Politics
+      - International Relations & Security
+      - Economy & Business
+      - Science, Technology & Innovation
+      - Health & Environment
+      - Law, Rights & Justice
+      - Culture, Identity & Society
+      - Migration & Demographics
+      - Sports, Media & Entertainment
+      - Other
 
-Return an array of objects in this exact format:
-[
-  {
-    "title": "Event Title",
-    "summary": "Concise factual summary (1-2 sentences)",
-    "context": "Multi-sentence contextual analysis drawn from articles",
-    "implications": "Multi-sentence impact analysis from article perspectives",
-    "articles": ["url1", "url2"]
-  }
-]
-
-Requirements:
-- Maintain strict factual accuracy using only information from provided articles, no speculation or perspectives
-- Avoid speculative language in implications section
-- Ensure context and implications don't repeat summary content
-- Prioritize diverse perspectives from different sources
-`
+Return JSON in this exact format:
+{
+  "timestamp": "YYYY-MM-DD",
+  "events": [
+    {
+      "title": "Event Title",
+      "summary": "Concise factual summary.",
+      "context": "Contextual analysis.",
+      "implications": "Implications.",
+      "articles": ["url1", "url2"],
+      "category": "Category Name"
+    }
+  ]
+}`
             },
             {
               role: 'user',
-              content: `Here are the articles:\n\n${JSON.stringify(
-                fullArticles.map(a => ({
-                  title: a.title,
-                  description: a.description,
-                  url: a.url,
-                  content: a.content
-                })),
-                null,
-                2
-              )}`
+              content: JSON.stringify(fullArticles.map(a => ({
+                title: a.title,
+                description: a.description,
+                url: a.url,
+                content: a.content
+              })))
             }
           ]
         },
@@ -145,19 +140,36 @@ Requirements:
         }
       );
 
-      const finalOutput = response.data?.choices?.[0]?.message?.content?.trim();
+      let finalOutput = response.data?.choices?.[0]?.message?.content?.trim();
       if (!finalOutput) throw new Error('Missing summarization content');
+
+      // Remove Markdown code blocks
+      finalOutput = finalOutput.replace(/^``````$/, '').trim();
+
       return finalOutput;
     }, { retries: 2 });
 
-    // Step 4: Save everything
-    writeFileSync('top_7_grouped_news.json', summarizationResponse);
-    console.log('Grouped and summarized news saved to top_7_grouped_news.json');
+    // Validate and save
+    let parsedOutput;
+    try {
+      parsedOutput = JSON.parse(summarizationResponse);
+    } catch (e) {
+      console.error("Invalid JSON:", e.message);
+      throw new Error(`Failed to parse API response: ${e.message}`);
+    }
+
+    parsedOutput.timestamp = new Date().toLocaleDateString('en-CA', { 
+      timeZone: 'America/Los_Angeles' 
+    });
+    
+    writeFileSync(filePath, JSON.stringify(parsedOutput, null, 2));
+    console.log('News data saved successfully');
+    return parsedOutput;
 
   } catch (err) {
     console.error('Pipeline error:', err.message);
-    process.exit(1);
+    throw err; // Propagate error for controller handling
   }
 }
 
-getTopNewsIssues();
+module.exports = { getTopNewsIssues };

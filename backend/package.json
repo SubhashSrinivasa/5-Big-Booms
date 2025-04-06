@@ -1,6 +1,7 @@
 {
   "name": "news-app-backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend for the News App using Express.js",
   "main": "src/app.js",
   "scripts": {

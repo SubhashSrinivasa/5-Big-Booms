@@ -1,7 +1,10 @@
-const express = require('express');
+import express from 'express';
+import newsController from '../controllers/newsController.js';
+import { updateNews } from '../controllers/updateController.js';
+
 const router = express.Router();
-const newsController = require('../controllers/newsController'); // Ensure fetchNews is exported correctly
 
-router.get('/news', newsController.fetchNews); // Ensure fetchNews is defined and functional
+router.get('/news', newsController.fetchNews);
+router.get('/update-news', updateNews);
 
-module.exports = router;
+export default router;
