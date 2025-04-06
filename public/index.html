@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fax</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background-color: #333;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .content {
+      text-align: center;
+      margin-top: 50px;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .tab {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+    .tab:hover {
+      background-color: #555;
+    }
+    .tab-content {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Fax</div>
+    <div class="links">
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </div>
+  </nav>
+  <div class="tabs">
+    <button class="tab" onclick="showContent('tab1')">Politics</button>
+    <button class="tab" onclick="showContent('tab2')">Economy</button>
+    <button class="tab" onclick="showContent('tab3')">Technology</button>
+    <button class="tab" onclick="showContent('tab4')">Health</button>
+    <button class="tab" onclick="showContent('tab5')">Environment</button>
+  </div>
+  <div class="tab-content" id="tab1">
+    <h2>Politics</h2>
+    <p>Latest updates on politics.</p>
+  </div>
+  <div class="tab-content" id="tab2" style="display: none;">
+    <h2>Economy</h2>
+    <p>Latest updates on the economy.</p>
+  </div>
+  <div class="tab-content" id="tab3" style="display: none;">
+    <h2>Technology</h2>
+    <p>Latest updates on technology.</p>
+  </div>
+  <div class="tab-content" id="tab4" style="display: none;">
+    <h2>Health</h2>
+    <p>Latest updates on health.</p>
+  </div>
+  <div class="tab-content" id="tab5" style="display: none;">
+    <h2>Environment</h2>
+    <p>Latest updates on the environment.</p>
+  </div>
+  <div class="content">
+    <h1>Welcome to Fax!</h1>
+    <p>Stay tuned for the latest updates.</p>
+  </div>
+  <script>
+    function showContent(tabId) {
+      const contents = document.querySelectorAll('.tab-content');
+      contents.forEach(content => content.style.display = 'none');
+      document.getElementById(tabId).style.display = 'block';
+    }
+  </script>
+</body>
+</html>

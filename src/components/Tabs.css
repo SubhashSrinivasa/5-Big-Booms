@@ -1,0 +1,21 @@
+.tabs-container {
+    display: flex;
+    flex-direction: column; /* Stack tabs vertically */
+    width: 100vw; /* Full width of the viewport */
+    margin: 0;
+    padding: 0;
+}
+
+.tab {
+    width: 100%; /* Each tab spans the full width */
+    text-align: center;
+    padding: 15px; /* Adjust padding for better spacing */
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: #f9f9f9; /* Optional: Add background color */
+}
+
+.tab:hover {
+    background-color: #e0e0e0; /* Optional: Add hover effect */
+}

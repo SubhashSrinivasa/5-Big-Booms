@@ -1,0 +1,46 @@
+.tabs-container {
+    display: flex;
+    flex-direction: column; /* Stack tabs vertically */
+    width: 100%; /* Full width of the container */
+    margin: 0;
+    padding: 0;
+}
+
+.tab {
+    width: 100%; /* Each tab spans the full width */
+    text-align: center;
+    padding: 15px; /* Adjust padding for better spacing */
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: #f9f9f9; /* Optional: Add background color */
+}
+
+.tab:hover {
+    background-color: #e0e0e0; /* Optional: Add hover effect */
+}
+
+.tab.active {
+    background-color: #d0d0d0; /* Highlight active tab */
+    font-weight: bold;
+}
+
+.tab-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 20px; /* Padding will collapse when hidden */
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tab-content.expanded {
+    max-height: 200px; /* Adjust based on expected content height */
+    padding: 20px;
+}
+
+.tab-content.collapsed {
+    max-height: 0;
+    padding: 0 20px;
+}
